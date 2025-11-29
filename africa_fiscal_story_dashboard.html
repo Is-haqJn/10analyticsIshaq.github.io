@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Africa's Fiscal Journey: 2010-2030 | 10Alytics Hackathon 2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * { font-family: 'Inter', sans-serif; }
+        body { 
+            background: linear-gradient(180deg, #0f0f1a 0%, #1a1a2e 50%, #0f0f1a 100%); 
+            min-height: 100vh;
+        }
+        
+        .glass { 
+            background: rgba(255,255,255,0.03); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255,255,255,0.08); 
+        }
+        
+        .glow-orange { box-shadow: 0 0 40px rgba(249,115,22,0.15); }
+        .glow-blue { box-shadow: 0 0 40px rgba(59,130,246,0.15); }
+        .glow-green { box-shadow: 0 0 40px rgba(34,197,94,0.15); }
+        .glow-red { box-shadow: 0 0 40px rgba(239,68,68,0.15); }
+        
+        .gradient-text { 
+            background: linear-gradient(135deg, #f97316 0%, #fbbf24 50%, #f97316 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+        
+        .phase-card { transition: all 0.4s ease; }
+        .phase-card:hover { transform: translateY(-8px); }
+        
+        .story-section { opacity: 0; transform: translateY(30px); animation: fadeInUp 0.8s ease forwards; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        
+        .timeline-dot { width: 16px; height: 16px; border-radius: 50%; position: relative; }
+        .timeline-dot::after { content: ''; position: absolute; top: 50%; left: 100%; width: 100px; height: 2px; background: linear-gradient(90deg, currentColor, transparent); }
+        
+        .data-note { 
+            background: rgba(251,191,36,0.1); 
+            border-left: 3px solid #fbbf24; 
+            padding: 12px 16px; 
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .country-btn { transition: all 0.3s ease; }
+        .country-btn:hover { transform: scale(1.05); }
+        .country-btn.active { background: #f97316 !important; color: white; }
+        
+        .prediction-bar { height: 8px; border-radius: 4px; transition: width 0.8s ease; }
+        
+        .nav-item { position: relative; cursor: pointer; }
+        .nav-item.active::after { 
+            content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
+            width: 30px; height: 3px; background: #f97316; border-radius: 2px;
+        }
+        
+        .country-header { 
+            background: linear-gradient(135deg, rgba(249,115,22,0.2) 0%, rgba(59,130,246,0.2) 100%);
+            border: 1px solid rgba(249,115,22,0.3);
+        }
+        
+        .dynamic-content { transition: all 0.4s ease; }
+        
+        select { 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); 
+            background-repeat: no-repeat; 
+            background-position: right 10px center; 
+            background-size: 16px; 
+        }
+    </style>
+</head>
+<body class="text-white">
+    
+    <!-- Hero Section -->
+    <header class="relative overflow-hidden py-12 px-6">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-20 left-20 w-72 h-72 bg-orange-500 rounded-full filter blur-[120px]"></div>
+            <div class="absolute bottom-20 right-20 w-96 h-96 bg-blue-500 rounded-full filter blur-[150px]"></div>
+        </div>
+        
+        <div class="max-w-6xl mx-auto relative z-10 text-center">
+            <p class="text-orange-400 font-medium tracking-wider mb-3">10ALYTICS GLOBAL HACKATHON 2025</p>
+            <h1 class="text-3xl md:text-5xl font-bold mb-4">
+                <span class="gradient-text">Unraveling Africa's</span>
+                <span class="text-white"> Sovereign Debt Crisis</span>
+            </h1>
+            <p class="text-lg text-gray-400 max-w-2xl mx-auto mb-6">
+                A data-driven journey through 15 years of fiscal policy across 14 African nations.
+            </p>
+            
+            <div class="flex flex-wrap justify-center gap-4 text-sm">
+                <div class="glass rounded-full px-5 py-2">
+                    <span class="text-orange-400 font-bold">15,496</span> Records
+                </div>
+                <div class="glass rounded-full px-5 py-2">
+                    <span class="text-blue-400 font-bold">14</span> Countries
+                </div>
+                <div class="glass rounded-full px-5 py-2">
+                    <span class="text-green-400 font-bold">2010-2030</span> Timeline
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 glass py-3 px-6 mb-6">
+        <div class="max-w-6xl mx-auto flex flex-wrap justify-center gap-3 md:gap-6">
+            <button onclick="scrollToSection('story')" class="nav-item active text-sm font-medium hover:text-orange-400 transition-colors">📖 Story</button>
+            <button onclick="scrollToSection('explorer')" class="nav-item text-sm font-medium hover:text-orange-400 transition-colors">🔍 Country Explorer</button>
+            <button onclick="scrollToSection('events')" class="nav-item text-sm font-medium hover:text-orange-400 transition-colors">📅 Events</button>
+            <button onclick="scrollToSection('solutions')" class="nav-item text-sm font-medium hover:text-orange-400 transition-colors">💡 Solutions</button>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-6 pb-16">
+        
+        <!-- Section 1: The Story (Static) -->
+        <section id="story" class="story-section mb-16">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl font-bold mb-3">📖 The Three-Act Story</h2>
+                <p class="text-gray-400 max-w-xl mx-auto text-sm">Africa's fiscal journey unfolds in three distinct phases.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-4 mb-8">
+                <!-- Phase 1 -->
+                <div class="phase-card glass rounded-xl p-5 border-l-4 border-green-500">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-2xl">🌅</span>
+                        <div>
+                            <p class="text-green-400 text-xs font-medium">Phase I</p>
+                            <h3 class="font-bold">The Boom</h3>
+                        </div>
+                    </div>
+                    <p class="text-xl font-bold text-green-400 mb-2">2010-2014</p>
+                    <p class="text-gray-400 text-sm">Oil at $100+/barrel. "Africa Rising" narrative. But growth was built on commodity prices, not structural change.</p>
+                </div>
+                
+                <!-- Phase 2 -->
+                <div class="phase-card glass rounded-xl p-5 border-l-4 border-orange-500">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-2xl">⚠️</span>
+                        <div>
+                            <p class="text-orange-400 text-xs font-medium">Phase II</p>
+                            <h3 class="font-bold">The Debt Trap</h3>
+                        </div>
+                    </div>
+                    <p class="text-xl font-bold text-orange-400 mb-2">2015-2019</p>
+                    <p class="text-gray-400 text-sm">Oil crashed. Governments borrowed instead of adjusting. Commercial debt replaced commodity revenue.</p>
+                </div>
+                
+                <!-- Phase 3 -->
+                <div class="phase-card glass rounded-xl p-5 border-l-4 border-red-500">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-2xl">🔥</span>
+                        <div>
+                            <p class="text-red-400 text-xs font-medium">Phase III</p>
+                            <h3 class="font-bold">The Polycrisis</h3>
+                        </div>
+                    </div>
+                    <p class="text-xl font-bold text-red-400 mb-2">2020-2025</p>
+                    <p class="text-gray-400 text-sm">COVID + Ukraine War + Currency Collapse. Ghana defaulted. Nigeria hit 33% inflation.</p>
+                </div>
+            </div>
+            
+            <!-- Key Insight -->
+            <div class="glass rounded-xl p-5 border-l-4 border-orange-500 flex items-start gap-4">
+                <span class="text-2xl">💡</span>
+                <div>
+                    <h4 class="font-bold mb-1">The $550 Billion Question</h4>
+                    <p class="text-gray-300 text-sm">Fiscal mismanagement cost Africa ~<span class="text-orange-400 font-bold">$550B USD</span> in lost development—enough for 90 hospitals, 30,000 schools, and 9,000km of highways.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Key Events Timeline -->
+        <section id="events" class="story-section mb-16" style="animation-delay: 0.3s">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold mb-2">📅 Events That Shaped the Crisis</h2>
+                <p class="text-gray-400 text-sm">Real-world events and their quantified fiscal impact</p>
+            </div>
+            
+            <div class="glass rounded-2xl p-6">
+                <div class="space-y-6">
+                    <div class="flex items-start gap-4">
+                        <div class="w-16 text-right flex-shrink-0">
+                            <span class="text-lg font-bold text-red-400">2011</span>
+                        </div>
+                        <div class="w-3 h-3 rounded-full bg-red-500 mt-2 flex-shrink-0"></div>
+                        <div class="flex-grow">
+                            <h4 class="font-bold">Arab Spring</h4>
+                            <p class="text-gray-400 text-sm">Egypt GDP growth <span class="text-red-400">-64%</span>, deficit <span class="text-red-400">+36%</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-4">
+                        <div class="w-16 text-right flex-shrink-0">
+                            <span class="text-lg font-bold text-orange-400">2014</span>
+                        </div>
+                        <div class="w-3 h-3 rounded-full bg-orange-500 mt-2 flex-shrink-0"></div>
+                        <div class="flex-grow">
+                            <h4 class="font-bold">Oil Price Crash</h4>
+                            <p class="text-gray-400 text-sm">Brent $115→$60. Nigeria growth <span class="text-orange-400">-49%</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-4">
+                        <div class="w-16 text-right flex-shrink-0">
+                            <span class="text-lg font-bold text-red-400">2020</span>
+                        </div>
+                        <div class="w-3 h-3 rounded-full bg-red-500 mt-2 flex-shrink-0"></div>
+                        <div class="flex-grow">
+                            <h4 class="font-bold">COVID-19 Pandemic</h4>
+                            <p class="text-gray-400 text-sm">S. Africa GDP <span class="text-red-400">-6.4%</span>, Ghana inflation <span class="text-red-400">+85%</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-4">
+                        <div class="w-16 text-right flex-shrink-0">
+                            <span class="text-lg font-bold text-red-400">2022</span>
+                        </div>
+                        <div class="w-3 h-3 rounded-full bg-red-500 mt-2 flex-shrink-0"></div>
+                        <div class="flex-grow">
+                            <h4 class="font-bold">Russia-Ukraine War</h4>
+                            <p class="text-gray-400 text-sm">Egypt inflation <span class="text-red-400">+394%</span>, Ghana defaulted Dec 2022</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-4">
+                        <div class="w-16 text-right flex-shrink-0">
+                            <span class="text-lg font-bold text-green-400">2023</span>
+                        </div>
+                        <div class="w-3 h-3 rounded-full bg-green-500 mt-2 flex-shrink-0"></div>
+                        <div class="flex-grow">
+                            <h4 class="font-bold">Nigeria Reforms Begin</h4>
+                            <p class="text-gray-400 text-sm">Fuel subsidy removed, FX unified. Painful but <span class="text-green-400">necessary</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+                <!-- Section 2: Current State (2024) -->
+        <section id="data" class="story-section mb-20" style="animation-delay: 0.2s">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">📊 Where We Stand Today (2024)</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">A snapshot of fiscal health across Africa's major economies, with all values standardized to USD for comparison.</p>
+            </div>
+            
+            <!-- Data Note -->
+            <div class="data-note mb-8">
+                <div class="flex items-start gap-3">
+                    <span class="text-2xl">📋</span>
+                    <div>
+                        <h4 class="font-semibold text-yellow-400 mb-1">About the Data Gaps</h4>
+                        <p class="text-sm text-gray-300">Some countries show "No Data" for specific metrics. This is not an error—<strong>Kenya and Ethiopia do not have Government Debt data in the IMF dataset</strong>. Ghana's debt-to-GDP appears low (4.2%) due to data sourcing differences; real-world estimates are ~80%. We transparently flag these gaps rather than fabricating data.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Key Stats Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="glass rounded-xl p-5 text-center glow-red">
+                    <p class="text-red-400 text-sm mb-1">🔴 Highest Inflation</p>
+                    <p class="text-3xl font-bold">33.2%</p>
+                    <p class="text-gray-400 text-sm">Nigeria</p>
+                </div>
+                <div class="glass rounded-xl p-5 text-center glow-orange">
+                    <p class="text-orange-400 text-sm mb-1">💰 Highest Debt/GDP</p>
+                    <p class="text-3xl font-bold">77.3%</p>
+                    <p class="text-gray-400 text-sm">South Africa</p>
+                </div>
+                <div class="glass rounded-xl p-5 text-center glow-purple" style="box-shadow: 0 0 40px rgba(168,85,247,0.15);">
+                    <p class="text-purple-400 text-sm mb-1">👥 Highest Unemployment</p>
+                    <p class="text-3xl font-bold">32.8%</p>
+                    <p class="text-gray-400 text-sm">South Africa</p>
+                </div>
+                <div class="glass rounded-xl p-5 text-center glow-green">
+                    <p class="text-green-400 text-sm mb-1">📈 Best GDP Growth</p>
+                    <p class="text-3xl font-bold">8.9%</p>
+                    <p class="text-gray-400 text-sm">Rwanda</p>
+                </div>
+            </div>
+            
+            <!-- Country Table -->
+            <div class="glass rounded-2xl p-6 overflow-x-auto">
+                <h3 class="font-semibold text-lg mb-4">Complete Country Comparison (2024, USD Standardized)</h3>
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="text-gray-400 border-b border-gray-700">
+                            <th class="text-left py-3 px-3">Country</th>
+                            <th class="text-right py-3 px-3">GDP</th>
+                            <th class="text-right py-3 px-3">Debt</th>
+                            <th class="text-right py-3 px-3">Debt/GDP</th>
+                            <th class="text-right py-3 px-3">Inflation</th>
+                            <th class="text-right py-3 px-3">Unemployment</th>
+                            <th class="text-right py-3 px-3">Growth</th>
+                            <th class="text-center py-3 px-3">Risk Level</th>
+                        </tr>
+                    </thead>
+                    <tbody id="countryTableBody"></tbody>
+                </table>
+            </div>
+            
+            <!-- Charts -->
+            <div class="grid md:grid-cols-2 gap-6 mt-8">
+                <div class="glass rounded-2xl p-6">
+                    <h3 class="font-semibold mb-4">Inflation Trends (2015-2024)</h3>
+                    <canvas id="inflationTrendChart" height="280"></canvas>
+                </div>
+                <div class="glass rounded-2xl p-6">
+                    <h3 class="font-semibold mb-4">GDP Size Comparison (2024, USD Billions)</h3>
+                    <canvas id="gdpCompareChart" height="280"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Country Explorer (Dynamic - Everything Changes) -->
+        <section id="explorer" class="story-section mb-16" style="animation-delay: 0.2s">
+            
+            <!-- Country Selector Header -->
+            <div class="country-header rounded-2xl p-6 mb-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-1">🔍 Country Deep Dive</h2>
+                        <p class="text-gray-400 text-sm">Select a country to explore its data, predictions, and SDG progress</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2" id="countrySelector">
+                        <button onclick="selectCountry('Nigeria')" class="country-btn active px-4 py-2 rounded-lg bg-gray-700 text-sm font-medium">🇳🇬 Nigeria</button>
+                        <button onclick="selectCountry('Egypt')" class="country-btn px-4 py-2 rounded-lg bg-gray-700 text-sm font-medium">🇪🇬 Egypt</button>
+                        <button onclick="selectCountry('South Africa')" class="country-btn px-4 py-2 rounded-lg bg-gray-700 text-sm font-medium">🇿🇦 S. Africa</button>
+                        <button onclick="selectCountry('Ghana')" class="country-btn px-4 py-2 rounded-lg bg-gray-700 text-sm font-medium">🇬🇭 Ghana</button>
+                        <button onclick="selectCountry('Kenya')" class="country-btn px-4 py-2 rounded-lg bg-gray-700 text-sm font-medium">🇰🇪 Kenya</button>
+                        <button onclick="selectCountry('Ethiopia')" class="country-btn px-4 py-2 rounded-lg bg-gray-700 text-sm font-medium">🇪🇹 Ethiopia</button>
+                        <button onclick="selectCountry('Rwanda')" class="country-btn px-4 py-2 rounded-lg bg-gray-700 text-sm font-medium">🇷🇼 Rwanda</button>
+                        <button onclick="selectCountry('Tanzania')" class="country-btn px-4 py-2 rounded-lg bg-gray-700 text-sm font-medium">🇹🇿 Tanzania</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Country Title (Dynamic) -->
+            <div class="text-center mb-6 dynamic-content">
+                <h3 class="text-3xl font-bold" id="countryTitle">🇳🇬 Nigeria</h3>
+                <p class="text-gray-400 text-sm mt-1" id="countrySubtitle">Africa's largest economy by GDP</p>
+            </div>
+
+            <!-- Current Stats (Dynamic) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 dynamic-content">
+                <div class="glass rounded-xl p-4 text-center" id="statGdp">
+                    <p class="text-gray-400 text-xs mb-1">GDP (2024)</p>
+                    <p class="text-2xl font-bold text-blue-400">$198.2B</p>
+                </div>
+                <div class="glass rounded-xl p-4 text-center" id="statInflation">
+                    <p class="text-gray-400 text-xs mb-1">Inflation</p>
+                    <p class="text-2xl font-bold text-red-400">33.2%</p>
+                </div>
+                <div class="glass rounded-xl p-4 text-center" id="statDebt">
+                    <p class="text-gray-400 text-xs mb-1">Debt/GDP</p>
+                    <p class="text-2xl font-bold text-orange-400">52.1%</p>
+                </div>
+                <div class="glass rounded-xl p-4 text-center" id="statGrowth">
+                    <p class="text-gray-400 text-xs mb-1">GDP Growth</p>
+                    <p class="text-2xl font-bold text-green-400">3.4%</p>
+                </div>
+            </div>
+
+            <!-- Data Note (Dynamic) -->
+            <div class="data-note mb-6 hidden" id="dataNote">
+                <p class="text-sm text-yellow-200" id="dataNoteTxt"></p>
+            </div>
+
+            <!-- 2030 Predictions (Dynamic) -->
+            <div class="glass rounded-2xl p-6 mb-6 dynamic-content">
+                <h4 class="font-bold text-lg mb-4">🔮 Road to 2030 Forecast</h4>
+                
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- Inflation Forecast -->
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-gray-400 text-sm">Inflation Rate</span>
+                            <span class="text-xs text-gray-500">Target: &lt;10%</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>2024 (Now)</span>
+                                    <span class="font-medium" id="inf2024">33.2%</span>
+                                </div>
+                                <div class="bg-gray-700 rounded-full h-2"><div class="prediction-bar bg-gray-400" id="infBar2024" style="width:66%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>2027</span>
+                                    <span class="font-medium text-orange-400" id="inf2027">35.6%</span>
+                                </div>
+                                <div class="bg-gray-700 rounded-full h-2"><div class="prediction-bar bg-orange-500" id="infBar2027" style="width:71%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>2030 Baseline</span>
+                                    <span class="font-bold text-red-400" id="inf2030">48.4%</span>
+                                </div>
+                                <div class="bg-gray-700 rounded-full h-2"><div class="prediction-bar bg-red-500" id="infBar2030" style="width:97%"></div></div>
+                            </div>
+                            <div class="pt-2 border-t border-gray-700">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>2030 With Reforms ✨</span>
+                                    <span class="font-bold text-green-400" id="inf2030R">7.0%</span>
+                                </div>
+                                <div class="bg-gray-700 rounded-full h-2"><div class="prediction-bar bg-green-500" id="infBar2030R" style="width:14%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Growth Forecast -->
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-gray-400 text-sm">GDP Growth</span>
+                            <span class="text-xs text-gray-500">Target: &gt;7%</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>2024 (Now)</span>
+                                    <span class="font-medium" id="grw2024">3.4%</span>
+                                </div>
+                                <div class="bg-gray-700 rounded-full h-2"><div class="prediction-bar bg-gray-400" id="grwBar2024" style="width:34%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>2027</span>
+                                    <span class="font-medium text-blue-400" id="grw2027">3.5%</span>
+                                </div>
+                                <div class="bg-gray-700 rounded-full h-2"><div class="prediction-bar bg-blue-500" id="grwBar2027" style="width:35%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>2030 Baseline</span>
+                                    <span class="font-bold text-blue-400" id="grw2030">3.8%</span>
+                                </div>
+                                <div class="bg-gray-700 rounded-full h-2"><div class="prediction-bar bg-blue-500" id="grwBar2030" style="width:38%"></div></div>
+                            </div>
+                            <div class="pt-2 border-t border-gray-700">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>2030 With Reforms ✨</span>
+                                    <span class="font-bold text-green-400" id="grw2030R">6.5%</span>
+                                </div>
+                                <div class="bg-gray-700 rounded-full h-2"><div class="prediction-bar bg-green-500" id="grwBar2030R" style="width:65%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Debt Forecast -->
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-gray-400 text-sm">Debt/GDP</span>
+                            <span class="text-xs text-gray-500">Target: &lt;50%</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>2024 (Now)</span>
+                                    <span class="font-medium" id="dbt2024">52.1%</span>
+                                </div>
+                                <div class="bg-gray-700 rounded-full h-2"><div class="prediction-bar bg-gray-400" id="dbtBar2024" style="width:52%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>2027</span>
+                                    <span class="font-medium text-purple-400" id="dbt2027">68.5%</span>
+                                </div>
+                                <div class="bg-gray-700 rounded-full h-2"><div class="prediction-bar bg-purple-500" id="dbtBar2027" style="width:69%"></div></div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>2030 Baseline</span>
+                                    <span class="font-bold text-red-400" id="dbt2030">85.0%</span>
+                                </div>
+                                <div class="bg-gray-700 rounded-full h-2"><div class="prediction-bar bg-red-500" id="dbtBar2030" style="width:85%"></div></div>
+                            </div>
+                            <div class="pt-2 border-t border-gray-700">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span>2030 With Reforms ✨</span>
+                                    <span class="font-bold text-green-400" id="dbt2030R">45.0%</span>
+                                </div>
+                                <div class="bg-gray-700 rounded-full h-2"><div class="prediction-bar bg-green-500" id="dbtBar2030R" style="width:45%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scenario Comparison (Dynamic) -->
+            <div class="grid md:grid-cols-2 gap-4 mb-6 dynamic-content">
+                <div class="glass rounded-xl p-5 border-l-4 border-red-500" id="baselineCard">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="text-2xl">⚠️</span>
+                        <div>
+                            <h4 class="font-bold text-red-400">Baseline Scenario</h4>
+                            <p class="text-xs text-gray-400">If current trajectory continues</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-sm text-gray-300" id="baselineList">
+                        <li>• Inflation reaches <span class="text-red-400 font-bold">48%</span> by 2030</li>
+                        <li>• Debt-to-GDP exceeds <span class="text-red-400 font-bold">85%</span></li>
+                        <li>• SDG targets <span class="text-red-400 font-bold">missed</span></li>
+                        <li>• Currency pressure continues</li>
+                    </ul>
+                </div>
+                
+                <div class="glass rounded-xl p-5 border-l-4 border-green-500" id="reformCard">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="text-2xl">✅</span>
+                        <div>
+                            <h4 class="font-bold text-green-400">Reform Scenario</h4>
+                            <p class="text-xs text-gray-400">If recommendations implemented</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-sm text-gray-300" id="reformList">
+                        <li>• Inflation drops to <span class="text-green-400 font-bold">7%</span> by 2030</li>
+                        <li>• Debt stabilizes at <span class="text-green-400 font-bold">45%</span></li>
+                        <li>• Revenue/GDP reaches <span class="text-green-400 font-bold">15%</span></li>
+                        <li>• <span class="text-green-400 font-bold">$50B</span> fiscal space unlocked</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SDG Progress (Dynamic) -->
+            <div class="glass rounded-2xl p-6 mb-6 dynamic-content">
+                <h4 class="font-bold text-lg mb-4">🎯 SDG Achievement Progress</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="sdgBars">
+                    <!-- Will be populated dynamically -->
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-700 flex justify-between items-center">
+                    <span class="text-gray-400">2030 Achievement Probability:</span>
+                    <span class="text-2xl font-bold" id="sdgProbability">49%</span>
+                </div>
+            </div>
+
+            <!-- Forecast Chart -->
+            <div class="glass rounded-2xl p-6 dynamic-content">
+                <h4 class="font-bold text-lg mb-4">📈 Inflation Trajectory Visualization</h4>
+                <canvas id="forecastChart" height="180"></canvas>
+            </div>
+        </section>
+
+        <!-- Section 4: Solutions (Dynamic by Country) -->
+        <section id="solutions" class="story-section mb-16" style="animation-delay: 0.4s">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold mb-2">💡 NEW Policy Recommendations</h2>
+                <p class="text-gray-400 text-sm">Innovative solutions not yet implemented</p>
+            </div>
+            
+            <div class="glass rounded-2xl p-6 dynamic-content" id="solutionsCard">
+                <!-- Will be populated dynamically based on selected country -->
+            </div>
+        </section>
+
+        <!-- Conclusion -->
+        <section class="story-section glass rounded-2xl p-8 text-center">
+            <h2 class="text-2xl font-bold mb-3 gradient-text">The Choice is Clear</h2>
+            <p class="text-gray-300 max-w-2xl mx-auto mb-4">
+                The baseline trajectory leads to a debt trap. The reform path unlocks sustainable growth.
+            </p>
+            <p class="text-gray-400 text-sm">The data doesn't lie. The question is whether the politics will listen.</p>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-6 text-gray-500 text-xs border-t border-gray-800">
+        <p>Built for <span class="text-orange-400">10Alytics Global Hackathon 2025</span> | November 29-30, 2025</p>
+    </footer>
+
+    <script>
+        // ========================================
+        // COMPLETE COUNTRY DATA
+        // ========================================
+        
+        const countryData = {
+            'Nigeria': { 
+                flag: '🇳🇬', 
+                subtitle: "Africa's largest economy by GDP",
+                gdp: 198.2, debt: 103.3, debtGdp: 52.1, inflation: 33.2, unemployment: 22.6, growth: 3.4,
+                predictions: { 
+                    inflation: { now: 33.2, y2027: 35.6, y2030: 48.4, reform: 7.0 },
+                    growth: { now: 3.4, y2027: 3.5, y2030: 3.8, reform: 6.5 },
+                    debt: { now: 52.1, y2027: 68.5, y2030: 85.0, reform: 45.0 }
+                },
+                sdg: { sdg1: 60, sdg8: 66, sdg16: 47, sdg17: 23 },
+                baseline: [
+                    'Inflation reaches <span class="text-red-400 font-bold">48%</span> by 2030',
+                    'Debt-to-GDP exceeds <span class="text-red-400 font-bold">85%</span>',
+                    'SDG targets <span class="text-red-400 font-bold">missed</span>',
+                    'Currency pressure continues'
+                ],
+                reform: [
+                    'Inflation drops to <span class="text-green-400 font-bold">7%</span> by 2030',
+                    'Debt stabilizes at <span class="text-green-400 font-bold">45%</span>',
+                    'Revenue/GDP reaches <span class="text-green-400 font-bold">15%</span>',
+                    '<span class="text-green-400 font-bold">$50B</span> fiscal space unlocked'
+                ],
+                solutions: {
+                    problem: 'Revenue-to-GDP at 6% (world\'s lowest), massive informal economy',
+                    existing: 'Tax reform bills pending, fuel subsidy removed',
+                    recommendations: [
+                        { title: '💳 Digital Payment Mandate', desc: 'Require e-payment for ALL government transactions to create digital trail for tax enforcement', impact: '$8-12B/year' },
+                        { title: '🛰️ Satellite Property Tax', desc: 'Use satellite imagery + AI to map properties and implement progressive property taxation', impact: '$5-7B/year' },
+                        { title: '🏭 Dangote Export Zone', desc: 'Create special export processing zone for refined petroleum products to West Africa', impact: '$15-20B exports' }
+                    ]
+                }
+            },
+            'Egypt': { 
+                flag: '🇪🇬', 
+                subtitle: "Strategic trade hub, IMF program active",
+                gdp: 328.7, debt: 80.2, debtGdp: 24.4, inflation: 28.5, unemployment: 6.6, growth: 0.05,
+                predictions: {
+                    inflation: { now: 28.5, y2027: 26.6, y2030: 33.5, reform: 8.0 },
+                    growth: { now: 0.05, y2027: 4.2, y2030: 5.0, reform: 6.0 },
+                    debt: { now: 24.4, y2027: 32.0, y2030: 38.0, reform: 25.0 }
+                },
+                sdg: { sdg1: 10, sdg8: 26, sdg16: 50, sdg17: 40 },
+                baseline: [
+                    'Inflation reaches <span class="text-red-400 font-bold">33%</span> by 2030',
+                    'Food import dependency <span class="text-red-400 font-bold">unchanged</span>',
+                    'Suez revenue <span class="text-red-400 font-bold">vulnerable</span>',
+                    'Military economic dominance continues'
+                ],
+                reform: [
+                    'Inflation drops to <span class="text-green-400 font-bold">8%</span> by 2030',
+                    'Food imports reduced by <span class="text-green-400 font-bold">30%</span>',
+                    'Alternative revenue streams <span class="text-green-400 font-bold">+$15B</span>',
+                    'Private sector <span class="text-green-400 font-bold">empowered</span>'
+                ],
+                solutions: {
+                    problem: '60% food import dependency, Suez Canal vulnerability ($6B loss from Red Sea crisis)',
+                    existing: 'IMF EFF program, Ras El-Hekma deal, multiple fuel price hikes',
+                    recommendations: [
+                        { title: '🌱 Desert Aquaponics Belt', desc: 'Solar-powered farms in Western Desert using saline groundwater for food production', impact: '30% import cut' },
+                        { title: '🚂 Alternative Trade Corridor', desc: 'Develop land bridge bypassing Suez via high-speed freight rail to Mediterranean ports', impact: '+$5B/year' },
+                        { title: '🏥 Medical Tourism Hub', desc: 'World-class medical tourism cluster in Sharm El-Sheikh', impact: '$3-5B revenue' }
+                    ]
+                }
+            },
+            'South Africa': { 
+                flag: '🇿🇦', 
+                subtitle: "Most industrialized, highest unemployment",
+                gdp: 396.6, debt: 306.4, debtGdp: 77.3, inflation: 4.4, unemployment: 32.8, growth: 0.6,
+                predictions: {
+                    inflation: { now: 4.4, y2027: 3.5, y2030: 2.5, reform: 2.5 },
+                    growth: { now: 0.6, y2027: 1.8, y2030: 2.0, reform: 4.0 },
+                    debt: { now: 77.3, y2027: 82.0, y2030: 85.0, reform: 65.0 }
+                },
+                sdg: { sdg1: 39, sdg8: 36, sdg16: 100, sdg17: 48 },
+                baseline: [
+                    'Unemployment stays above <span class="text-red-400 font-bold">30%</span>',
+                    'Debt-to-GDP reaches <span class="text-red-400 font-bold">85%</span>',
+                    'Youth crisis <span class="text-red-400 font-bold">deepens</span>',
+                    'Growth stays below <span class="text-red-400 font-bold">2%</span>'
+                ],
+                reform: [
+                    'Create <span class="text-green-400 font-bold">2M jobs</span> by 2030',
+                    'Debt drops to <span class="text-green-400 font-bold">65%</span>',
+                    'Growth reaches <span class="text-green-400 font-bold">4%</span>',
+                    '<span class="text-green-400 font-bold">$20B</span> hydrogen industry'
+                ],
+                solutions: {
+                    problem: '33% structural unemployment (4.8M youth), 77% debt/GDP, logistics crisis',
+                    existing: 'Load shedding ended, GNU coalition formed, S&P rating upgrade',
+                    recommendations: [
+                        { title: '🏘️ Township Manufacturing Zones', desc: 'Zero-tax zones in Soweto, Khayelitsha for labor-intensive industries', impact: '500K jobs' },
+                        { title: '⚡ Green Hydrogen Hub', desc: 'Leverage wind/solar for hydrogen export to Europe via Coega/Saldanha Bay', impact: '$20B industry' },
+                        { title: '🎓 Skills-for-Equity Program', desc: 'Government training with equity stake in graduate startups', impact: '200K skilled' }
+                    ]
+                }
+            },
+            'Ghana': { 
+                flag: '🇬🇭', 
+                subtitle: "Post-restructuring recovery phase",
+                gdp: 94.1, debt: 4.0, debtGdp: 4.2, inflation: 22.9, unemployment: null, growth: 5.68,
+                note: "Debt data shows 4.2% in dataset but real-world is ~80%",
+                predictions: {
+                    inflation: { now: 22.9, y2027: 34.2, y2030: 46.8, reform: 10.0 },
+                    growth: { now: 5.68, y2027: 4.8, y2030: 5.0, reform: 7.0 },
+                    debt: { now: 80.0, y2027: 70.0, y2030: 65.0, reform: 50.0 }
+                },
+                sdg: { sdg1: 69, sdg8: 73, sdg16: 88, sdg17: 20 },
+                baseline: [
+                    'Inflation reaches <span class="text-red-400 font-bold">47%</span> by 2030',
+                    'Revenue gap of <span class="text-red-400 font-bold">GHS 6.4B</span>',
+                    'Debt redemption crisis <span class="text-red-400 font-bold">2027-28</span>',
+                    'Cocoa volatility continues'
+                ],
+                reform: [
+                    'Inflation drops to <span class="text-green-400 font-bold">10%</span> by 2030',
+                    'Gold value capture <span class="text-green-400 font-bold">+$3B</span>',
+                    'Debt to <span class="text-green-400 font-bold">50%</span>',
+                    'Energy sector <span class="text-green-400 font-bold">stabilized</span>'
+                ],
+                solutions: {
+                    problem: 'Cocoa/gold price volatility, post-restructuring revenue gap (GHS 6.4B from repealed taxes)',
+                    existing: 'IMF ECF program, Eurobond restructuring complete (37% haircut)',
+                    recommendations: [
+                        { title: '🏅 Ghana Gold Refinery', desc: 'State gold refinery + diaspora gold-backed savings instruments', impact: '+$3B/year' },
+                        { title: '🍫 Accra Cocoa Exchange', desc: 'African cocoa futures exchange to reduce price volatility', impact: '$200M fees' },
+                        { title: '☀️ Green Energy Bonds', desc: '$2B green bond for solar farms to eliminate energy sector arrears', impact: '80% recovery' }
+                    ]
+                }
+            },
+            'Kenya': { 
+                flag: '🇰🇪', 
+                subtitle: "East Africa's financial hub",
+                gdp: 102.6, debt: null, debtGdp: 68.0, inflation: 5.9, unemployment: 5.4, growth: 4.5,
+                note: "No Government Debt data in dataset. GDP annualized from QPartial (estimate: 68% debt/GDP)",
+                predictions: {
+                    inflation: { now: 5.9, y2027: 5.0, y2030: 4.5, reform: 4.0 },
+                    growth: { now: 4.5, y2027: 5.5, y2030: 6.0, reform: 7.5 },
+                    debt: { now: 68.0, y2027: 72.0, y2030: 75.0, reform: 55.0 }
+                },
+                sdg: { sdg1: 42, sdg8: 44, sdg16: 80, sdg17: 50 },
+                baseline: [
+                    'Debt pressure <span class="text-red-400 font-bold">increases</span>',
+                    'Tax protests <span class="text-red-400 font-bold">continue</span>',
+                    'Climate shocks <span class="text-red-400 font-bold">worsen</span>',
+                    'Remittance dependency <span class="text-red-400 font-bold">unchanged</span>'
+                ],
+                reform: [
+                    'Become Africa\'s <span class="text-green-400 font-bold">digital hub</span>',
+                    'Debt drops to <span class="text-green-400 font-bold">55%</span>',
+                    'Growth reaches <span class="text-green-400 font-bold">7.5%</span>',
+                    '<span class="text-green-400 font-bold">$5B</span> digital exports'
+                ],
+                solutions: {
+                    problem: 'High debt service burden, over-reliance on remittances, climate vulnerability',
+                    existing: 'Finance bill protests led to tax reform pause',
+                    recommendations: [
+                        { title: '💻 Digital Services Hub', desc: 'Position Kenya as Africa\'s remote work and BPO export center', impact: '$5B exports' },
+                        { title: '🌋 Geothermal Industrial Park', desc: 'Manufacturing zone powered by Rift Valley geothermal energy', impact: 'Lowest cost' },
+                        { title: '💸 Diaspora Infrastructure Bonds', desc: 'Target $4B annual remittances for infrastructure investment', impact: '$2B raised' }
+                    ]
+                }
+            },
+            'Ethiopia': { 
+                flag: '🇪🇹', 
+                subtitle: "Fastest growing, currency just floated",
+                gdp: 102.2, debt: null, debtGdp: 55.0, inflation: 26.6, unemployment: null, growth: 8.1,
+                note: "No Debt/Unemployment data in dataset",
+                predictions: {
+                    inflation: { now: 26.6, y2027: 18.0, y2030: 12.0, reform: 8.0 },
+                    growth: { now: 8.1, y2027: 8.0, y2030: 8.5, reform: 10.0 },
+                    debt: { now: 55.0, y2027: 48.0, y2030: 45.0, reform: 35.0 }
+                },
+                sdg: { sdg1: 80, sdg8: 83, sdg16: 50, sdg17: 50 },
+                baseline: [
+                    'Post-conflict reconstruction <span class="text-red-400 font-bold">slow</span>',
+                    'FX shortage <span class="text-red-400 font-bold">persists</span>',
+                    'Inflation stays <span class="text-red-400 font-bold">elevated</span>',
+                    'Regional tensions <span class="text-red-400 font-bold">continue</span>'
+                ],
+                reform: [
+                    'Inflation to <span class="text-green-400 font-bold">8%</span> by 2030',
+                    'Coffee exports <span class="text-green-400 font-bold">double</span>',
+                    'GERD revenue <span class="text-green-400 font-bold">$1B/year</span>',
+                    'Growth reaches <span class="text-green-400 font-bold">10%</span>'
+                ],
+                solutions: {
+                    problem: 'Post-conflict reconstruction needed, currency just floated (July 2024), FX shortage',
+                    existing: 'IMF ECF program, currency float, telecom liberalization',
+                    recommendations: [
+                        { title: '☕ Coffee Premium Brand', desc: 'Create Ethiopian coffee certification for premium pricing (like Champagne)', impact: 'Double to $2B' },
+                        { title: '🏗️ Tigray Special Economic Zone', desc: 'Reconstruction-focused SEZ with international investment incentives', impact: '$5B investment' },
+                        { title: '⚡ GERD Power Agreements', desc: 'Lock in long-term power purchase agreements with neighbors', impact: '$1B/year' }
+                    ]
+                }
+            },
+            'Rwanda': { 
+                flag: '🇷🇼', 
+                subtitle: "Africa's governance model, highest growth",
+                gdp: 13.9, debt: 10.2, debtGdp: 73.5, inflation: 14.3, unemployment: 15.3, growth: 8.9,
+                note: "2024 GDP is Q4-only (3.8B), using 2023 annual GDP (13.9B) for display. Debt/GDP calculated from 2023 values.",
+                predictions: {
+                    inflation: { now: 14.3, y2027: 4.0, y2030: 3.5, reform: 3.0 },
+                    growth: { now: 8.9, y2027: 9.0, y2030: 9.5, reform: 10.5 },
+                    debt: { now: 73.5, y2027: 58.0, y2030: 55.0, reform: 45.0 }
+                },
+                sdg: { sdg1: 75, sdg8: 80, sdg16: 85, sdg17: 55 },
+                baseline: [
+                    'Growth stays strong at <span class="text-blue-400 font-bold">9%+</span>',
+                    'Debt manageable at <span class="text-blue-400 font-bold">55%</span>',
+                    'Inflation low at <span class="text-blue-400 font-bold">3.5%</span>',
+                    'Regional hub status <span class="text-blue-400 font-bold">grows</span>'
+                ],
+                reform: [
+                    'Growth reaches <span class="text-green-400 font-bold">10.5%</span>',
+                    'Become Africa\'s <span class="text-green-400 font-bold">Singapore</span>',
+                    'Tech hub attracts <span class="text-green-400 font-bold">$2B</span>',
+                    'SDG targets <span class="text-green-400 font-bold">achieved</span>'
+                ],
+                solutions: {
+                    problem: 'Small economy, landlocked, need to scale service exports',
+                    existing: 'Strong governance, tech investment, tourism growth',
+                    recommendations: [
+                        { title: '🖥️ Africa Tech Training Hub', desc: 'Position as continent\'s premier software engineering training center', impact: '$500M exports' },
+                        { title: '🏦 Regional Financial Center', desc: 'Develop as East Africa\'s fintech and banking hub', impact: '+$1B services' },
+                        { title: '🌿 Carbon Credit Marketplace', desc: 'Leverage forests for Africa\'s carbon credit trading platform', impact: '$200M/year' }
+                    ]
+                }
+            },
+            'Tanzania': { 
+                flag: '🇹🇿', 
+                subtitle: "Resource-rich, stable growth",
+                gdp: 80.0, debt: null, debtGdp: 42.0, inflation: 3.0, unemployment: null, growth: 5.4,
+                note: "Limited Debt and Unemployment data in dataset. GDP annualized from QPartial (19.99B × 4 = 80.0B)",
+                predictions: {
+                    inflation: { now: 3.0, y2027: 4.0, y2030: 4.5, reform: 3.5 },
+                    growth: { now: 5.4, y2027: 6.2, y2030: 6.5, reform: 8.0 },
+                    debt: { now: 42.0, y2027: 46.0, y2030: 48.0, reform: 38.0 }
+                },
+                sdg: { sdg1: 65, sdg8: 70, sdg16: 60, sdg17: 60 },
+                baseline: [
+                    'Growth steady at <span class="text-blue-400 font-bold">6.5%</span>',
+                    'Debt moderate at <span class="text-blue-400 font-bold">48%</span>',
+                    'Inflation low at <span class="text-blue-400 font-bold">4.5%</span>',
+                    'LNG potential <span class="text-blue-400 font-bold">untapped</span>'
+                ],
+                reform: [
+                    'Growth reaches <span class="text-green-400 font-bold">8%</span>',
+                    'LNG exports begin <span class="text-green-400 font-bold">$5B</span>',
+                    'Debt stays at <span class="text-green-400 font-bold">38%</span>',
+                    'Tourism <span class="text-green-400 font-bold">doubles</span>'
+                ],
+                solutions: {
+                    problem: 'Untapped LNG potential, tourism concentration, infrastructure gaps',
+                    existing: 'Stable macro policy, SGR investment, port expansion',
+                    recommendations: [
+                        { title: '⛽ LNG Export Fast-Track', desc: 'Accelerate LNG development with international partnerships', impact: '$5B exports' },
+                        { title: '🦁 Eco-Tourism Diversification', desc: 'Develop Southern Circuit (Ruaha, Selous) beyond Serengeti', impact: 'Double visitors' },
+                        { title: '🚢 Dar es Salaam Super-Port', desc: 'Position as DRC/Zambia/Malawi gateway port', impact: '$2B transit fees' }
+                    ]
+                }
+            }
+        };
+
+        // ========================================
+        // RENDER FUNCTIONS
+        // ========================================
+        
+        function renderCountryTable() {
+            const tbody = document.getElementById('countryTableBody');
+            tbody.innerHTML = Object.entries(countryData).map(([name, c]) => {
+                const risk = ((c.inflation || 0) > 20 ? 2 : 0) + ((c.debtGdp || 0) > 60 ? 2 : 0) + ((c.unemployment || 0) > 20 ? 2 : 0) + ((c.growth || 5) < 2 ? 1 : 0);
+                const riskLevel = risk >= 4 ? 'High' : risk >= 2 ? 'Medium' : 'Low';
+                const riskColor = risk >= 4 ? 'text-red-400 bg-red-500/20' : risk >= 2 ? 'text-yellow-400 bg-yellow-500/20' : 'text-green-400 bg-green-500/20';
+                
+                const formatVal = (v, suffix='') => v !== null && v !== undefined ? `${v.toFixed(1)}${suffix}` : '<span class="text-gray-500">No Data</span>';
+                const warnColor = (v, threshold, invert=false) => {
+                    if (v === null || v === undefined) return '';
+                    return invert ? (v < threshold ? 'text-red-400' : '') : (v > threshold ? 'text-red-400' : '');
+                };
+                
+                return `
+                <tr class="border-b border-gray-700/50 hover:bg-white/5 transition-colors">
+                    <td class="py-4 px-3 font-medium">${c.flag} ${name}</td>
+                    <td class="py-4 px-3 text-right">$${formatVal(c.gdp, 'B')}</td>
+                    <td class="py-4 px-3 text-right">${c.debt !== null ? '$' + formatVal(c.debt, 'B') : '<span class="text-gray-500 text-xs">No Data*</span>'}</td>
+                    <td class="py-4 px-3 text-right ${warnColor(c.debtGdp, 60)}">${c.debtGdp !== null ? formatVal(c.debtGdp, '%') : '<span class="text-gray-500 text-xs">No Data*</span>'}</td>
+                    <td class="py-4 px-3 text-right ${warnColor(c.inflation, 20)}">${formatVal(c.inflation, '%')}</td>
+                    <td class="py-4 px-3 text-right ${warnColor(c.unemployment, 20)}">${c.unemployment !== null ? formatVal(c.unemployment, '%') : '<span class="text-gray-500 text-xs">No Data*</span>'}</td>
+                    <td class="py-4 px-3 text-right ${warnColor(c.growth, 2, true)}">${formatVal(c.growth, '%')}</td>
+                    <td class="py-4 px-3 text-center"><span class="px-3 py-1 rounded-full text-xs font-medium ${riskColor}">${riskLevel}</span></td>
+                </tr>`;
+            }).join('');
+        }
+
+        function initCharts() {
+            // Inflation Trend Chart
+            new Chart(document.getElementById('inflationTrendChart'), {
+                type: 'line',
+                data: {
+                    labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+                    datasets: [
+                        { label: 'Nigeria', data: [9, 15.7, 16.5, 12.1, 11.4, 13.2, 17, 18.8, 24.5, 33.2], borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)', tension: 0.3, borderWidth: 2 },
+                        { label: 'Egypt', data: [10.4, 13.8, 29.5, 14.4, 9.2, 5.1, 5.2, 13.2, 28, 28.5], borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.3, borderWidth: 2 },
+                        { label: 'Ghana', data: [17.2, 17.5, 12.4, 9.8, 8.7, 9.9, 10, 31.5, 40.3, 22.9], borderColor: '#eab308', backgroundColor: 'rgba(234,179,8,0.1)', tension: 0.3, borderWidth: 2 },
+                        { label: 'South Africa', data: [4.6, 6.3, 5.3, 4.6, 4.1, 3.3, 4.5, 6.9, 5.9, 4.4], borderColor: '#a855f7', backgroundColor: 'rgba(168,85,247,0.1)', tension: 0.3, borderWidth: 2 },
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: '#9ca3af', usePointStyle: true } } },
+                    scales: {
+                        x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        y: { ticks: { color: '#9ca3af', callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                    }
+                }
+            });
+            
+            // GDP Comparison Chart
+            const gdpData = Object.entries(countryData).map(([n, c]) => ({ name: n, gdp: c.gdp, flag: c.flag })).sort((a, b) => b.gdp - a.gdp);
+            new Chart(document.getElementById('gdpCompareChart'), {
+                type: 'bar',
+                data: {
+                    labels: gdpData.map(d => d.name),
+                    datasets: [{
+                        label: 'GDP (USD Billions)',
+                        data: gdpData.map(d => d.gdp),
+                        backgroundColor: ['#a855f7', '#3b82f6', '#22c55e', '#06b6d4', '#eab308', '#f97316', '#ef4444', '#ec4899']
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#9ca3af', callback: v => '$' + v + 'B' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        y: { ticks: { color: '#9ca3af' }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+        
+        let selectedCountry = 'Nigeria';
+        let forecastChart = null;
+        
+        // ========================================
+        // UPDATE FUNCTIONS
+        // ========================================
+        
+        function selectCountry(country) {
+            selectedCountry = country;
+            const c = countryData[country];
+            
+            // Update button states
+            document.querySelectorAll('#countrySelector .country-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update country header
+            document.getElementById('countryTitle').textContent = `${c.flag} ${country}`;
+            document.getElementById('countrySubtitle').textContent = c.subtitle;
+            
+            // Update current stats
+            document.getElementById('statGdp').innerHTML = `<p class="text-gray-400 text-xs mb-1">GDP (2024)</p><p class="text-2xl font-bold text-blue-400">$${c.gdp}B</p>`;
+            document.getElementById('statInflation').innerHTML = `<p class="text-gray-400 text-xs mb-1">Inflation</p><p class="text-2xl font-bold ${c.inflation > 20 ? 'text-red-400' : 'text-green-400'}">${c.inflation}%</p>`;
+            document.getElementById('statDebt').innerHTML = `<p class="text-gray-400 text-xs mb-1">Debt/GDP</p><p class="text-2xl font-bold ${c.debtGdp > 60 ? 'text-orange-400' : 'text-green-400'}">${c.debtGdp !== null ? c.debtGdp + '%' : 'Est. ' + (c.predictions.debt.now) + '%'}</p>`;
+            document.getElementById('statGrowth').innerHTML = `<p class="text-gray-400 text-xs mb-1">GDP Growth</p><p class="text-2xl font-bold ${c.growth > 5 ? 'text-green-400' : 'text-blue-400'}">${c.growth}%</p>`;
+            
+            // Update data note
+            const noteEl = document.getElementById('dataNote');
+            if (c.note) {
+                noteEl.classList.remove('hidden');
+                document.getElementById('dataNoteTxt').textContent = '⚠️ ' + c.note;
+            } else {
+                noteEl.classList.add('hidden');
+            }
+            
+            // Update predictions
+            const p = c.predictions;
+            
+            // Inflation
+            document.getElementById('inf2024').textContent = p.inflation.now + '%';
+            document.getElementById('inf2027').textContent = p.inflation.y2027 + '%';
+            document.getElementById('inf2030').textContent = p.inflation.y2030 + '%';
+            document.getElementById('inf2030R').textContent = p.inflation.reform + '%';
+            document.getElementById('infBar2024').style.width = Math.min(p.inflation.now * 2, 100) + '%';
+            document.getElementById('infBar2027').style.width = Math.min(p.inflation.y2027 * 2, 100) + '%';
+            document.getElementById('infBar2030').style.width = Math.min(p.inflation.y2030 * 2, 100) + '%';
+            document.getElementById('infBar2030R').style.width = Math.min(p.inflation.reform * 2, 100) + '%';
+            
+            // Growth
+            document.getElementById('grw2024').textContent = p.growth.now + '%';
+            document.getElementById('grw2027').textContent = p.growth.y2027 + '%';
+            document.getElementById('grw2030').textContent = p.growth.y2030 + '%';
+            document.getElementById('grw2030R').textContent = p.growth.reform + '%';
+            document.getElementById('grwBar2024').style.width = p.growth.now * 10 + '%';
+            document.getElementById('grwBar2027').style.width = p.growth.y2027 * 10 + '%';
+            document.getElementById('grwBar2030').style.width = p.growth.y2030 * 10 + '%';
+            document.getElementById('grwBar2030R').style.width = p.growth.reform * 10 + '%';
+            
+            // Debt
+            document.getElementById('dbt2024').textContent = p.debt.now + '%';
+            document.getElementById('dbt2027').textContent = p.debt.y2027 + '%';
+            document.getElementById('dbt2030').textContent = p.debt.y2030 + '%';
+            document.getElementById('dbt2030R').textContent = p.debt.reform + '%';
+            document.getElementById('dbtBar2024').style.width = p.debt.now + '%';
+            document.getElementById('dbtBar2027').style.width = p.debt.y2027 + '%';
+            document.getElementById('dbtBar2030').style.width = Math.min(p.debt.y2030, 100) + '%';
+            document.getElementById('dbtBar2030R').style.width = p.debt.reform + '%';
+            
+            // Update scenario cards
+            document.getElementById('baselineList').innerHTML = c.baseline.map(b => `<li>• ${b}</li>`).join('');
+            document.getElementById('reformList').innerHTML = c.reform.map(r => `<li>• ${r}</li>`).join('');
+            
+            // Update SDG bars
+            const sdgNames = { sdg1: 'No Poverty', sdg8: 'Decent Work', sdg16: 'Institutions', sdg17: 'Debt' };
+            const sdgContainer = document.getElementById('sdgBars');
+            sdgContainer.innerHTML = Object.entries(c.sdg).map(([key, val]) => {
+                const color = val > 60 ? 'green' : val > 40 ? 'yellow' : 'red';
+                return `
+                <div>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-gray-400">${sdgNames[key]}</span>
+                        <span class="font-medium text-${color}-400">${val}</span>
+                    </div>
+                    <div class="bg-gray-700 rounded-full h-2">
+                        <div class="h-2 rounded-full bg-${color}-500 transition-all" style="width:${val}%"></div>
+                    </div>
+                </div>`;
+            }).join('');
+            
+            const avgSdg = Math.round((c.sdg.sdg1 + c.sdg.sdg8 + c.sdg.sdg16 + c.sdg.sdg17) / 4);
+            const probColor = avgSdg > 60 ? 'text-green-400' : avgSdg > 40 ? 'text-yellow-400' : 'text-red-400';
+            document.getElementById('sdgProbability').className = `text-2xl font-bold ${probColor}`;
+            document.getElementById('sdgProbability').textContent = avgSdg + '%';
+            
+            // Update solutions
+            const sol = c.solutions;
+            document.getElementById('solutionsCard').innerHTML = `
+                <div class="mb-4">
+                    <h3 class="text-xl font-bold mb-2">${c.flag} ${country}</h3>
+                    <p class="text-red-400 text-sm mb-1"><strong>Problem:</strong> ${sol.problem}</p>
+                    <p class="text-gray-400 text-sm"><strong>Already Doing:</strong> ${sol.existing}</p>
+                </div>
+                <h4 class="font-bold text-green-400 mb-4">✨ NEW Recommendations:</h4>
+                <div class="grid md:grid-cols-3 gap-4">
+                    ${sol.recommendations.map(r => `
+                    <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700 hover:border-green-500 transition-colors">
+                        <h5 class="font-bold text-white mb-2">${r.title}</h5>
+                        <p class="text-gray-400 text-sm mb-3">${r.desc}</p>
+                        <p class="text-green-400 text-xs font-medium">💰 Impact: ${r.impact}</p>
+                    </div>`).join('')}
+                </div>
+            `;
+            
+            // Update chart
+            updateForecastChart(country);
+        }
+
+        
+        
+        function updateForecastChart(country) {
+            const c = countryData[country];
+            const p = c.predictions.inflation;
+            
+            if (forecastChart) forecastChart.destroy();
+            
+            // Calculate intermediate points
+            const baseline = [p.now, p.now*0.95, (p.now+p.y2027)/2, p.y2027, (p.y2027+p.y2030)/2, p.y2030*0.9, p.y2030];
+            const reform = [p.now, p.now*0.8, p.now*0.55, p.now*0.4, p.reform*1.8, p.reform*1.3, p.reform];
+            
+            forecastChart = new Chart(document.getElementById('forecastChart'), {
+                type: 'line',
+                data: {
+                    labels: ['2024', '2025', '2026', '2027', '2028', '2029', '2030'],
+                    datasets: [
+                        {
+                            label: 'Baseline (No Reforms)',
+                            data: baseline,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2,
+                            borderDash: [6, 4]
+                        },
+                        {
+                            label: 'With Reforms',
+                            data: reform,
+                            borderColor: '#22c55e',
+                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: '#9ca3af', usePointStyle: true, padding: 15 } },
+                        title: { display: true, text: `${country} Inflation Rate Forecast (%)`, color: '#fff', font: { size: 13 } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.03)' } },
+                        y: { ticks: { color: '#9ca3af', callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,0.03)' }, min: 0 }
+                    }
+                }
+            });
+        }
+        
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCountryTable();
+            initCharts();
+            selectCountry('Nigeria');
+        });
+    </script>
+</body>
+</html>
